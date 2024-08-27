@@ -1,0 +1,10 @@
+.video-container {
+  /* border: 2px solid black; */
+  width: 100vw;
+  aspect-ratio: 16/9;
+  display: block;
+}
+.video-sample {
+  height: 100%;
+  width: 100%;
+}
