@@ -6,52 +6,69 @@ import sample2 from "../assets/sample2.mp4";
 import { io } from "socket.io-client";
 
 export default function Video() {
-  const [videoStatus, setVideoStatus] = useState("");
-  const [angle, setAngle] = useState();
+  // const [angle, setAngle] = useState();
+  // const [videoStatus, setVideoStatus] = useState("");
+  const [videoName, setVideoName] = useState("");
   const videoRef = useRef(null);
+  const socket = io("192.168.1.34:4000");
   // const socket = io("http://192.168.1.8:3000");
-  const socket = io("http://192.168.43.175:3000");
+  // const socket = io("http://192.168.43.175:3000");
+
+  // useEffect(() => {
+  //   const socketCallForAngle = () => {
+  //     socket.on("angleStatus", (msg) => {
+  //       console.log(msg);
+  //       setAngle(msg);
+  //     });
+  //     socketCallForVideoStatus();
+  //   };
+
+  //   const socketCallForVideoStatus = () =>
+  //     socket.on("videoStatus", (msg) => {
+  //       console.log(msg);
+  //       setVideoStatus(msg);
+
+  //       if (msg === "play") {
+  //         if (videoRef.current) {
+  //           videoRef.current.play();
+  //         }
+  //       }
+  //     });
+
+  //   // socketCallForVideoStatus();
+  //   socketCallForAngle();
+
+  //   // Cleanup the socket connection when the component unmounts
+  //   return () => {
+  //     socket.off("videoStatus");
+  //   };
+  // }, [socket]);
 
   useEffect(() => {
-    const socketCallForAngle = () => {
-      socket.on("angleStatus", (msg) => {
-        console.log(msg);
-        setAngle(msg);
-      });
-      socketCallForVideoStatus();
-    };
+    socket.on("play_video", (msg) => {
+      setVideoName(msg);
+    });
 
-    const socketCallForVideoStatus = () =>
-      socket.on("videoStatus", (msg) => {
-        console.log(msg);
-        setVideoStatus(msg);
+    socket.on("stop_video", (msg) => {
+      setVideoName(msg);
+    });
 
-        if (msg === "play") {
-          if (videoRef.current) {
-            videoRef.current.play();
-          }
-        }
-      });
-
-    // socketCallForVideoStatus();
-    socketCallForAngle();
-
-    // Cleanup the socket connection when the component unmounts
     return () => {
-      socket.off("videoStatus");
+      socket.off("play_video");
+      socket.off("stop_video");
     };
   }, [socket]);
 
   const handleVideoEnd = () => {
-    socket.emit("videoStatus", "paused");
+    socket.emit("play_video", "Video Removed from screen");
     console.log("Video has ended and emitted 'videoStatus: paused'");
-    setVideoStatus("paused");
-    setAngle();
+    // setVideoStatus("paused");
+    setVideoName("");
   };
 
   return (
     <>
-      {videoStatus === "play" && angle === 18 && (
+      {videoName === "sample" && (
         <div className="video-container">
           <video
             ref={videoRef}
@@ -63,7 +80,7 @@ export default function Video() {
           />
         </div>
       )}
-      {videoStatus === "play" && angle === 36 && (
+      {videoName === "sample1" && (
         <div className="video-container">
           <video
             ref={videoRef}
@@ -75,7 +92,7 @@ export default function Video() {
           />
         </div>
       )}
-      {videoStatus === "play" && angle === 54 && (
+      {videoName === "sample2" && (
         <div className="video-container">
           <video
             ref={videoRef}
